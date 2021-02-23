@@ -24,7 +24,7 @@ public class MyWebConfig implements WebMvcConfigurer {
 	//注册拦截器
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new RequestInterceptor()).excludePathPatterns("/user/login");
+		registry.addInterceptor(new RequestInterceptor()).excludePathPatterns("/user/login","/","/layui/**","/index.html","/favicon.ico");
 	}
 
 
