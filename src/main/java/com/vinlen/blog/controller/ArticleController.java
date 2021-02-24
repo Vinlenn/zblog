@@ -17,7 +17,7 @@ public class ArticleController extends BaseController {
 	@RequestMapping("/article/search")
 	public NutMap search(@RequestParam("name") String name, @RequestParam("page") int page) {
 		Cnd cnd = "".equals(name) ? Cnd.NEW() : Cnd.where("title", "like", "%" + name + "%");
-		return NutMap.NEW().setv("list", dao.query(Article.class, cnd.and("author","=",Util.getUserId()), new Pager(page, 10))).setv("count", dao.count(Article.class, cnd));
+		return NutMap.NEW().setv("list", dao.query(Article.class, cnd, new Pager(page, 10))).setv("count", dao.count(Article.class, cnd));
 	}
 
 	@RequestMapping("/article/edit")
@@ -32,7 +32,9 @@ public class ArticleController extends BaseController {
 
 	@RequestMapping("/article/delete")
 	public boolean delete(@RequestParam("id") Long id) {
-		return dao.delete(Article.class, id) > 0;
+		Article fetch = dao.fetch(Article.class, id);
+		Util.isTrue(fetch.getAuthor()==Util.getUserId(),"no access!");
+		return dao.delete(fetch) > 0;
 	}
 
 }

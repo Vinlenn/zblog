@@ -70,8 +70,6 @@
         </tr>
         </tbody>
     </table>
-
-
 </div>
 </body>
 <script>
@@ -133,6 +131,7 @@
                 app.isList = true;
                 app.isEdit = false;
                 app.isAdd = false;
+                app.page=1;
                 var name = $("#searchValue").val();
                 $.ajax({
                     type: "POST",
