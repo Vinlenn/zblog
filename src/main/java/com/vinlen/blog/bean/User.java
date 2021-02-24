@@ -1,14 +1,19 @@
 package com.vinlen.blog.bean;
 
+import org.nutz.dao.entity.annotation.Column;
+import org.nutz.dao.entity.annotation.Id;
 import org.nutz.dao.entity.annotation.Table;
 
 @Table("zb_user")
 public class User {
 
+	@Id
 	private Long id;
 
+	@Column
 	private String name;
 
+	@Column
 	private String password;
 
 	public Long getId() {

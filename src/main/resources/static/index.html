@@ -8,21 +8,45 @@
     <script type="text/javascript" src="http://lib.sinaapp.com/js/jquery/2.0.3/jquery-2.0.3.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <link rel="stylesheet" href="layui/css/layui.css">
+    <script src="layui/layui.all.js"></script>
 </head>
 <body>
 <div style="height: 100%;width: 100%" id="app">
-    <a v-if="isLogout">账号：</a><input v-if="isLogout" id="name">
-    <a v-if="isLogout">密码：</a><input v-if="isLogout" id="password">
-    <button v-if="isLogout" class="layui-btn" v-on:click="login">{{loginText}}</button>
-    <button v-if="isLogin" class="layui-btn" v-on:click="logout">{{logoutText}}</button>
-    <input v-if="isLogin" id="searchValue" v-model="searchInput" v-on:click="clear">
-    <button v-if="isLogin" class="layui-btn" v-on:click="search">查询</button>
-    <button v-if="isLogin" class="layui-btn" v-on:click="add">添加</button>
-    <a v-if="isEdit">{{article.title}}</a>
-    <br>
-    <a v-if="isEdit">{{article.content}}</a>
+    <div v-if="isLogout">
+        <a>账号：</a><input v-if="isLogout" id="name">
+        <a>密码：</a><input v-if="isLogout" id="password">
+        <button class="layui-btn" v-on:click="login">{{loginText}}</button>
+    </div>
+    <div v-if="isLogin">
+        <button class="layui-btn" v-on:click="logout">{{logoutText}}</button>
+        <input id="searchValue" v-model="searchInput" v-on:click="clear">
+        <button class="layui-btn" v-on:click="search">查询</button>
+        <button class="layui-btn" v-on:click="add">添加</button>
+        <button v-if="isEdit" class="layui-btn" v-on:click="backToList">返回</button>
+        <button v-if="isAdd" class="layui-btn" v-on:click="save">保存</button>
+        <button v-if="isList && page>1" class="layui-btn" v-on:click="up">上一页</button>
+        <button v-if="isList && count >10*page" class="layui-btn" v-on:click="down">下一页</button>
+        <h2 v-if="isList">第{{page}}页,共{{count}}条</h2>
+    </div>
+    <div v-if="isEdit">
+        <div style="text-align: center;font-size: xxx-large">
+            {{article.title}}
+        </div>
+        <br>
 
-    <table class="layui-table" v-if="isSearch">
+        <div class="layui-input-block">
+            <pre>{{article.content}}</pre>
+        </div>
+    </div>
+    <div v-if="isAdd">
+        <div class="layui-input-block">
+            <textarea placeholder="请输入标题" class="layui-textarea" id="title"
+                      style="min-height: 10px;line-height: 10px;"></textarea>
+        </div>
+        <textarea placeholder="请输入内容" class="layui-textarea" id="content"
+                  style="min-height: 500px;line-height: 20px;"></textarea>
+    </div>
+    <table class="layui-table" v-if="isList">
         <colgroup>
             <col width="100">
             <col width="100">
@@ -41,7 +65,7 @@
             <td>{{article.content}}</td>
             <td>
                 <button v-on:click="edit(article.id)">查看</button>
-                <button v-on:click="delete(article.id)">删除</button>
+                <button v-on:click="deleteArticle(article.id)">删除</button>
             </td>
         </tr>
         </tbody>
@@ -58,14 +82,15 @@
             logoutText: '退出',
             isLogin: false,
             isLogout: true,
-            isSearch: false,
+            isList: false,
             isEdit: false,
             isAdd: false,
             token: "",
-            searchInput: "输入搜索内容",
+            searchInput: "",
             page: 1,
             articles: [],
-            article: {}
+            article: {},
+            count: 0
 
         },
         methods: {
@@ -98,14 +123,14 @@
             logout: function () {
                 app.isLogin = false;
                 app.isLogout = true;
-                app.isSearch = false;
+                app.isList = false;
                 app.isAdd = false;
             },
             clear: function () {
                 app.searchInput = "";
             },
             search: function () {
-                app.isSearch = true;
+                app.isList = true;
                 app.isEdit = false;
                 app.isAdd = false;
                 var name = $("#searchValue").val();
@@ -116,11 +141,13 @@
                         "token": app.token
                     },
                     data: {
-                        "name": name
+                        "name": name,
+                        "page": app.page
                     },
                     success: function (data) {
-                        if (data) {
-                            app.articles = data;
+                        if (data.list) {
+                            app.articles = data.list;
+                            app.count = data.count;
                         } else {
 
                         }
@@ -128,12 +155,18 @@
 
                 });
             },
+            backToList: function () {
+                app.isList = true;
+                app.isEdit = false;
+            },
             add: function () {
-
+                app.isList = false;
+                app.isEdit = false;
+                app.isAdd = true;
             },
             edit: function (e) {
                 console.log(e);
-                app.isSearch = false;
+                app.isList = false;
                 app.isEdit = true;
                 app.isAdd = false;
                 var name = $("#searchValue").val();
@@ -157,8 +190,58 @@
                 });
 
             },
-            delete: function (e) {
-                console.log(e);
+            save: function () {
+                var data = {
+                    "title": $("#title").val(),
+                    "content": $("#content").val()
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/article/save",
+                    headers: {
+                        "token": app.token,
+                        "Content-Type": "application/json"
+                    },
+                    data: JSON.stringify(data),
+                    success: function (data) {
+                        if (data) {
+                            //保存成功
+                            app.search();
+                        } else {
+
+                        }
+                    }
+
+                });
+            },
+            deleteArticle: function (e) {
+                $.ajax({
+                    type: "POST",
+                    url: "/article/delete",
+                    headers: {
+                        "token": app.token
+                    },
+                    data: {
+                        "id": e
+                    },
+                    success: function (data) {
+                        if (data) {
+                            //刷新列表
+                            app.search();
+                        } else {
+
+                        }
+                    }
+
+                });
+            },
+            up: function () {
+                app.page = app.page - 1;
+                app.search();
+            },
+            down: function () {
+                app.page = app.page + 1;
+                app.search();
             }
         }
     });

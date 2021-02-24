@@ -1,12 +1,23 @@
 package com.vinlen.blog.bean;
 
+import org.nutz.dao.entity.annotation.Column;
+import org.nutz.dao.entity.annotation.Id;
+import org.nutz.dao.entity.annotation.Table;
+
+@Table("zb_article")
 public class Article {
 
+    @Id
 	private Long id;
 
+    @Column
 	private String title;
 
+	@Column
 	private String content;
+
+	@Column
+	private Long author;
 
 	public Long getId() {
 		return id;
@@ -32,14 +43,21 @@ public class Article {
 		this.content = content;
 	}
 
-	public Article(String title, String content) {
-		this.title = title;
-		this.content = content;
+	public Long getAuthor() {
+		return author;
 	}
 
-	public Article(Long id, String title, String content) {
-		this.id = id;
+	public void setAuthor(Long author) {
+		this.author = author;
+	}
+
+	public Article(String title, String content, Long author) {
 		this.title = title;
 		this.content = content;
+		this.author = author;
+	}
+
+
+	public Article() {
 	}
 }
