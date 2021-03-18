@@ -17,7 +17,7 @@ public class ArticleController extends BaseController {
 	@RequestMapping("/article/search")
 	public NutMap search(@RequestParam("name") String name, @RequestParam("page") int page) {
 		Cnd cnd = "".equals(name) ? Cnd.NEW() : Cnd.where("title", "like", "%" + name + "%");
-		return NutMap.NEW().setv("list", dao.query(Article.class, cnd, new Pager(page, 10))).setv("count", dao.count(Article.class, cnd));
+		return NutMap.NEW().setv("list", dao.query(Article.class, cnd.and("author","=",Util.getUserId()), new Pager(page, 10))).setv("count", dao.count(Article.class, cnd));
 	}
 
 	@RequestMapping("/article/edit")
