@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.vinlen.blog</groupId>
-	<artifactId>blog</artifactId>
+	<artifactId>work</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>zblog</name>
+	<name>work</name>
 	<description>log for vinlen</description>
 	<properties>
 		<java.version>1.8</java.version>

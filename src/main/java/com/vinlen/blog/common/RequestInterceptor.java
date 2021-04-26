@@ -11,7 +11,7 @@ public class RequestInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		String token = request.getHeader("token");
-		Util.notNull(token,"token is null!");
+		Util.notNull(token,"token失效，请重新登录");
 		return Util.verifyToken(token);
 	}
 }

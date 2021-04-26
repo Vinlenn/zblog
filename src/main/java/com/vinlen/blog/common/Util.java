@@ -5,6 +5,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.nutz.lang.util.NutMap;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -41,7 +42,7 @@ public class Util {
 			THREAD_LOCAL.set(map);
 			return true;
 		} catch (Exception e) {
-			throw new RuntimeException("token is failure");
+			throw new RuntimeException("token失效，请重新登录");
 		}
 	}
 
@@ -57,6 +58,8 @@ public class Util {
 	public static void notNull(Object object, String msg) {
 		isTrue(object != null, msg);
 	}
+
+
 
 
 }
