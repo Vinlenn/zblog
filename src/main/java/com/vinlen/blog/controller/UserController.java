@@ -1,6 +1,8 @@
 package com.vinlen.blog.controller;
 
 import com.vinlen.blog.bean.User;
+import com.vinlen.blog.bean.zkh.Category;
+import com.vinlen.blog.bean.zkh.Type;
 import com.vinlen.blog.common.Request;
 import com.vinlen.blog.common.Result;
 import com.vinlen.blog.common.Util;
