@@ -47,4 +47,13 @@ public class Type {
     public void setAnotherName(String anotherName) {
         this.anotherName = anotherName;
     }
+
+    public Type() {
+    }
+
+    public Type(Long categoryId, String name, String anotherName) {
+        this.categoryId = categoryId;
+        this.name = name;
+        this.anotherName = anotherName;
+    }
 }

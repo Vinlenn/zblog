@@ -23,9 +23,8 @@ import java.util.stream.Collectors;
 public class TypeController extends BaseController {
     @RequestMapping("/type/list")
     public Result list(@RequestBody Request request) {
-        Util.isTrue(request.get("id") != null, "参数粗欧文");
         Pager pager = new Pager(request.getInt("pageNumber"), request.getInt("pageSize"));
-        Cnd cnd = Cnd.where("categoryId", "=", request.getLong("id"));
+        Cnd cnd = request.get("id")==null?null:Cnd.where("categoryId", "=", request.getLong("id"));
         int count = dao.count(Type.class, cnd);
         List<Type> query = dao.query(Type.class, cnd, pager);
         List<Long> ids = query.stream().map(Type::getCategoryId).distinct().collect(Collectors.toList());
@@ -37,5 +36,11 @@ public class TypeController extends BaseController {
             return map;
         }).collect(Collectors.toList());
         return Result.ok("success", Json.toJson(new ListResult<NutMap>(count, result)));
+    }
+
+    @RequestMapping("/type/add")
+    public Result add(@RequestBody Request request){
+        dao.insert(new Type(request.getLong("id"),request.getString("name"),request.getString("name")));
+        return Result.ok("success");
     }
 }

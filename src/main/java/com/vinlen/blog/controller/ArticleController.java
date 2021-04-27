@@ -9,6 +9,7 @@ import com.vinlen.blog.common.Result;
 import com.vinlen.blog.common.Util;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.pager.Pager;
+import org.nutz.dao.sql.OrderBy;
 import org.nutz.json.Json;
 import org.nutz.lang.Lang;
 import org.nutz.lang.util.NutMap;
@@ -23,8 +24,7 @@ import java.util.stream.Collectors;
 public class ArticleController extends BaseController {
     @RequestMapping("/article/list")
     public Result list(@RequestBody Request request) {
-        Util.isTrue(request.get("id") != null, "参数错误");
-        Cnd cnd = Cnd.where("typeId", "=", request.getLong("id"));
+        Cnd cnd = request.get("id")==null?Cnd.NEW():Cnd.where("typeId", "=", request.getLong("id"));
         Pager pager = new Pager(request.getInt("pageNumber"), request.getInt("pageSize"));
         int count = dao.count(Article.class, cnd);
         List<Article> query = dao.query(Article.class, cnd.orderBy("reader", "asc"), pager);
@@ -52,9 +52,21 @@ public class ArticleController extends BaseController {
 
     @RequestMapping("/article/reader")
     public Result reader(@RequestBody Request request) {
-        Article artitle = dao.fetch(Article.class, request.getInt("id"));
-        artitle.setReader("是");
-        dao.update(artitle);
+        Article article = dao.fetch(Article.class, request.getInt("id"));
+        article.setReader("是");
+        dao.update(article);
+        return Result.ok("success");
+    }
+
+    @RequestMapping("/article/add")
+    public Result add(@RequestBody Request request){
+        Article article = new Article();
+        article.setReader("否");
+        article.setContent(request.getString("content"));
+        article.setTitle(request.getString("title"));
+        article.setUrl(request.getString("url"));
+        article.setTypeId(request.getLong("typeId"));
+        dao.insert(article);
         return Result.ok("success");
     }
 
